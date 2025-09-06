@@ -16,83 +16,50 @@
   a{color:inherit;text-decoration:none}
 
   .wrap{max-width:1200px;margin:0 auto;padding:20px}
-
-  header{
-    position:sticky;top:0;z-index:5;display:flex;flex-direction:column;gap:8px;
+  header{position:sticky;top:0;z-index:5;display:flex;flex-direction:column;gap:8px;
     align-items:center;justify-content:center;padding:14px 0 12px;
     background:linear-gradient(180deg, rgba(11,11,11,.92), rgba(11,11,11,.72));
-    border-bottom:1px solid var(--ring);backdrop-filter:blur(6px)
-  }
+    border-bottom:1px solid var(--ring);backdrop-filter:blur(6px)}
   header h1{margin:0;font-size:20px;color:var(--accent)}
   .month-display{font-weight:900;font-size:22px;letter-spacing:.3px;color:var(--accent-strong);text-align:center}
 
   .controls{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
   .left,.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .btn{
-    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);
     background:var(--card);color:var(--ink);padding:8px 12px;border-radius:10px;
-    cursor:pointer;font-weight:600;font-size:14px;transition:all .15s ease
-  }
+    cursor:pointer;font-weight:600;font-size:14px;transition:all .15s ease}
   .btn:hover{border-color:var(--accent);color:var(--accent)}
-  .btn[disabled]{opacity:.5;cursor:not-allowed}
   .select{appearance:none;border:1px solid var(--ring);background:var(--card);color:var(--ink);
     padding:8px 12px;border-radius:10px;font-weight:600}
 
-  .calendar{margin-top:14px;border:1px solid var(--ring);border-radius:16px;background:var(--card);
-    box-shadow:0 2px 8px rgba(0,0,0,.35);overflow:hidden}
-  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--ring);
-    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0))}
-  .cal-head div{padding:10px 8px;text-align:center;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.4px}
-
+  .calendar{margin-top:14px;border:1px solid var(--ring);border-radius:16px;background:var(--card);overflow:hidden}
+  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--ring)}
+  .cal-head div{padding:10px 8px;text-align:center;font-size:12px;color:var(--muted);font-weight:700}
   .grid{display:grid;grid-template-columns:repeat(7,1fr);min-height:420px}
-  .cell{
-    position:relative;border-right:1px solid var(--ring);border-bottom:1px solid var(--ring);
-    padding:8px;min-height:112px;cursor:pointer
-  }
+  .cell{position:relative;border-right:1px solid var(--ring);border-bottom:1px solid var(--ring);
+    padding:8px;min-height:112px;cursor:pointer}
   .grid .cell:nth-child(7n){border-right:none}
   .date-num{font-weight:800;font-size:13px;color:var(--accent);opacity:.9}
   .cell.muted .date-num{color:#9a9a9a}
   .cell.oggi{outline:2px solid var(--accent);outline-offset:-2px}
 
-  /* Mini-slideshow nella cella (senza crop) */
   .thumb{margin-top:6px;border:1px solid var(--ring);background:#000;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:4/3}
-  .thumb .slides{position:absolute;inset:0;background:#000}
   .thumb .slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
   .thumb .slide.attiva{opacity:1}
   .thumb img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
-  /* Anteprima al volo */
-  .hover-preview{position:fixed;display:none;z-index:30;pointer-events:none}
-  .hover-preview.aperta{display:block}
-  .hover-card{border:1px solid var(--ring);background:#0e0e0e;color:var(--ink);
-    border-radius:12px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}
-  .hover-media{width:360px;height:240px;background:#000;display:flex;align-items:center;justify-content:center}
-  .hover-media img{width:100%;height:100%;object-fit:contain;background:#000}
-  .hover-cap{padding:8px 10px;font-size:12px;color:var(--muted);border-top:1px solid var(--ring)}
-
-  /* Drawer giorno */
-  .drawer{
-    position:fixed;inset:auto 0 0 0;background:#0e0e0e;border-top:1px solid var(--ring);
-    box-shadow:0 -12px 30px rgba(0,0,0,.45);transform:translateY(100%);transition:transform .25s ease;
-    z-index:20;max-height:90vh;overflow:hidden
-  }
+  .drawer{position:fixed;inset:auto 0 0 0;background:#0e0e0e;border-top:1px solid var(--ring);
+    transform:translateY(100%);transition:transform .25s ease;z-index:20;max-height:90vh;overflow:hidden}
   .drawer.aperta{transform:translateY(0)}
-  .drawer .bar{
-    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
-    padding:12px 16px;border-bottom:1px solid var(--ring);background:#121212
-  }
-  .drawer .bar h2{
-    margin:0;text-align:center;font-weight:900;font-size:22px;letter-spacing:.2px;color:var(--accent-strong)
-  }
-  .drawer .azioni{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-  .drawer .body{padding:16px;max-height:calc(90vh - 60px);overflow:auto;-webkit-overflow-scrolling:touch}
+  .drawer .bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--ring);background:#121212}
+  .drawer h2{margin:0;font-weight:900;font-size:20px;color:var(--accent-strong)}
+  .drawer .body{padding:16px;max-height:calc(90vh - 60px);overflow:auto}
 
-  .foto{display:grid;grid-template-columns:1fr;gap:24px;max-width:900px;margin:0 auto}
+  .foto{display:grid;gap:24px;max-width:900px;margin:0 auto}
   .card{border:1px solid var(--ring);background:#121212;border-radius:14px;overflow:hidden}
-  .card .media{aspect-ratio:3/2;background:#000;border-bottom:1px solid var(--ring);display:flex;align-items:center;justify-content:center;position:relative}
-  .card img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+  .card .media{aspect-ratio:3/2;background:#000;border-bottom:1px solid var(--ring);display:flex;align-items:center;justify-content:center}
+  .card img{max-width:100%;max-height:100%;object-fit:contain;display:block;cursor:pointer}
 
-  /* Info mittente + descrizione */
   .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px}
   .sender-badge{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;
     border:1px solid var(--ring);background:#191919;color:var(--ink);padding:4px 8px;border-radius:999px}
@@ -100,64 +67,51 @@
   .cap[contenteditable="true"]{outline:1px dashed var(--ring);border-radius:6px;padding:4px 6px}
 
   .riga-azioni{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px;border-top:1px solid var(--ring);background:#151515}
-  .ico-btn{
-    display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);background:#191919;color:var(--ink);
-    padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .15s ease
-  }
+  .ico-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);background:#191919;color:var(--ink);
+    padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .15s ease}
   .ico-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-  /* Modal */
+  #filterList{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .filter-chip{padding:6px 12px;border:1px solid var(--ring);border-radius:999px;
+    background:#191919;color:var(--ink);font-weight:600;cursor:pointer}
+  .filter-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .group-date{font-size:16px;font-weight:700;color:var(--accent-strong);margin:18px 0 8px}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:40}
   .modal.aperta{display:flex}
   .modal .frame{max-width:92vw;max-height:88vh;border-radius:12px;overflow:hidden;border:1px solid var(--ring);background:#000}
-  .modal img{max-width:100%;max-height:88vh;width:auto;height:auto;object-fit:contain;display:block;background:#000}
-
-  /* SR-only */
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-
-  #filterList {
-  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;
-  }
-  .filter-chip {
-    padding:6px 12px; border:1px solid var(--ring); border-radius:999px;
-    background:#191919; color:var(--ink); font-weight:600; cursor:pointer;
-  }
-  .filter-chip:hover { border-color:var(--accent); color:var(--accent); }
-  .group-date {
-    font-size:16px; font-weight:700; color:var(--accent-strong);
-    margin:18px 0 8px;
-  }
+  .modal img{max-width:100%;max-height:88vh;object-fit:contain;display:block}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Galleria Calendario</h1>
-      <div class="month-display" id="monthDisplay">—</div>
+<div class="wrap">
+  <header>
+    <h1>Galleria Calendario</h1>
+    <div class="month-display" id="monthDisplay">—</div>
+  </header>
 
-      <h1>Galleria Calendario</h1>
-      <div id="monthDisplay">—</div>
-      <button class="btn" id="filterBtn">Filtri</button>
-    </header>
-
-    <div class="controls" role="group" aria-label="Controlli calendario">
-      <div class="left">
-        <button class="btn" id="prevMonth" aria-label="Mese precedente">◀</button>
-        <button class="btn" id="todayBtn">Oggi</button>
-        <button class="btn" id="nextMonth" aria-label="Mese successivo">▶</button>
-        <button class="btn" id="prevWithPhotos" title="Vai al giorno precedente con foto">← Giorno con foto</button>
-        <button class="btn" id="nextWithPhotos" title="Vai al prossimo giorno con foto">Giorno con foto →</button>
-      </div>
-      <div class="right">
-        <select id="monthSel" class="select" aria-label="Mese"></select>
-        <select id="yearSel" class="select" aria-label="Anno"></select>
-      </div>
+  <div class="controls" role="group" aria-label="Controlli calendario">
+    <div class="left">
+      <button class="btn" id="prevMonth">◀</button>
+      <button class="btn" id="todayBtn">Oggi</button>
+      <button class="btn" id="nextMonth">▶</button>
+      <button class="btn" id="prevWithPhotos">← Giorno con foto</button>
+      <button class="btn" id="nextWithPhotos">Giorno con foto →</button>
     </div>
+    <div class="right">
+      <button class="btn" id="filterBtn">Filtri</button>
+      <select id="monthSel" class="select"></select>
+      <select id="yearSel" class="select"></select>
+    </div>
+  </div>
 
-    <section class="calendar" aria-label="Calendario">
-      <div class="cal-head" id="weekdayHead"></div>
-      <div class="grid" id="grid"></div>
-    </section>
+  <section class="calendar" aria-label="Calendario">
+    <div class="cal-head" id="weekdayHead"></div>
+    <div class="grid" id="grid"></div>
+  </section>
 
     <!-- ======== DATI (Aggiunti i tuoi giorni con segnaposto) ======== -->
     <div id="data" class="sr-only">
@@ -270,133 +224,133 @@
         </section>
       
         <section data-date="2022-02-15">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-02-15_011256.jpg" alt="2022-02-15 01:12:56" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-03-11">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-03-11_234205.jpg" alt="2022-03-11 23:42:05" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-03-21">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-03-21_224113.jpg" alt="2022-03-21 22:41:13" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-04-13">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-04-13_131429.jpg" alt="2022-04-13 13:14:29" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-05-14">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-05-14_171545.jpg" alt="2022-05-14 17:15:45" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-05-25">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-05-25_201146.jpg" alt="2022-05-25 20:11:46" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-07-28">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-07-28_223828.jpg" alt="2022-07-28 22:38:28" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-08-21">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-08-21_194954.jpg" alt="2022-08-21 17:08:40" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-09-25">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-09-25_113050.jpg" alt="2022-09-25 11:30:50" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-10-09">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-10-09_204625.jpg" alt="2022-10-09 20:46:25" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-10-21">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-10-21_022959.jpg" alt="2022-10-21 02:29:59" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-10-29">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-10-29_003752.jpg" alt="2022-10-29 00:37:52" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-12-26">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-12-26_182733.jpg" alt="2022-12-26 18:27:33" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2022-12-27">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2022-12-27_005732.jpg" alt="2022-12-27 00:57:32" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-01-11">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-01-11_134028.jpg" alt="2023-01-11 13:40:28" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-01-12">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-01-12_010829.jpg" alt="2023-01-12 01:08:29" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-01-13">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-01-13_161133.jpg" alt="2023-01-13 16:11:33" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-02-14">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-02-14_185845.jpg" alt="2023-02-14 18:58:45" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-03-02">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-03-02_094714.jpg" alt="2023-03-02 09:47:14" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
@@ -407,349 +361,349 @@
         </section>
       
         <section data-date="2023-03-03">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-03-03_144853.jpg" alt="2023-03-03 14:48:53" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-03-03_232751.jpg" alt="2023-03-03 23:27:51" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-03-22">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-03-22_104101.jpg" alt="2023-03-22 10:41:01" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-03-29">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-03-29_214237.jpg" alt="2023-03-29 21:42:37" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-04-01">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-04-01_094451.jpg" alt="2023-04-01 09:44:51" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-04-15">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-04-15_194527.jpg" alt="2023-04-15 19:45:27" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-04-25">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-04-25_122547.jpg" alt="2023-04-25 12:25:47" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-04-25_162104.jpg" alt="2023-04-25 16:21:04" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-06-03">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-06-03_202016.jpg" alt="2023-06-03 20:20:16" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-10-01">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-10-01_185616.jpg" alt="2023-10-01 18:56:16" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-10-30">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-10-30_222105.jpg" alt="2023-10-30 22:21:05" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-10-31">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-10-31_224803.jpg" alt="2023-10-31 22:48:03" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-11-09">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-11-09_165806.jpg" alt="2023-11-09 16:58:06" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-11-30">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-11-30_212633.jpg" alt="2023-11-30 21:26:33" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2023-12-08">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2023-12-08_154815.jpg" alt="2023-12-08 15:48:15" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-01-01">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-01-01_002739.jpg" alt="2024-01-01 00:27:39" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-02-14">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-02-14_181740.jpg" alt="2024-02-14 18:17:40" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-02-14_203658.jpg" alt="2024-02-14 20:36:58" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-03-03">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-03-03_150026.jpg" alt="2024-03-03 15:00:26" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-04-18">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-18_183634.jpg" alt="2024-04-18 18:36:34" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-04-19">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-19_150343.jpg" alt="2024-04-19 15:03:43" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-19_153813.jpg" alt="2024-04-19 15:38:13" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-19_174932.jpg" alt="2024-04-19 17:49:32" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-04-20">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-20_135511.jpg" alt="2024-04-20 13:55:11" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-20_150759.jpg" alt="2024-04-20 15:07:59" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-20_172909.jpg" alt="2024-04-20 17:29:09" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-04-21">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-04-21_222445.jpg" alt="2024-04-21 22:24:45" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-05-01">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-05-01_123458.jpg" alt="2024-05-01 12:34:58" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-07-28">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-07-28_000124.jpg" alt="2024-07-28 00:01:24" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-07-28_000259.jpg" alt="2024-07-28 00:02:59" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-07-28_000330.jpg" alt="2024-07-28 00:03:30" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-07-28_000401.jpg" alt="2024-07-28 00:04:01" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-07-28_141130.jpg" alt="2024-07-28 14:11:30" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-08-08">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-08-08_011724.jpg" alt="2024-08-08 01:17:24" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-08-11">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-08-11_133006.jpg" alt="2024-08-11 13:30:06" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-09-22">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-09-22_153302.jpg" alt="2024-09-22 15:33:02" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-10-30">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-10-30_212006.jpg" alt="2024-10-30 21:20:06" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-10-31">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-10-31_120944.jpg" alt="2024-10-31 12:09:44" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-11-09">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-11-09_205019.jpg" alt="2024-11-09 20:50:19" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2024-11-28">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2024-11-28_232936.jpg" alt="2024-11-28 23:29:36" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-01-01">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-01-01_223244.jpg" alt="2025-01-01 22:32:44" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-02-13">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-02-13_222301.jpg" alt="2025-02-13 22:23:01" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-02-14">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-02-14_155808.jpg" alt="2025-02-14 15:58:08" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-03-05">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-03-05_202353.jpg" alt="2025-03-05 20:23:53" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-03-28">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-03-28_111212.jpg" alt="2025-03-28 11:12:12" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-06-27">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-06-27_210900.jpg" alt="2025-06-27 21:09:00" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-06-30">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-06-30_095224.jpg" alt="2025-06-30 09:52:24" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-06-30_132739.jpg" alt="2025-06-30 13:27:39" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-07-22">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-07-22_013423.jpg" alt="2025-07-22 01:34:23" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-07-28">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-07-28_112506.jpg" alt="2025-07-28 11:25:06" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-08-14">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-08-14_193902.jpg" alt="2025-08-14 19:39:02" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-08-15">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-08-15_155537.jpg" alt="2025-08-15 15:55:37" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-08-16">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-08-16_221639.jpg" alt="2025-08-16 22:16:39" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-08-20">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-08-20_145658.jpg" alt="2025-08-20 14:56:58" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
       
         <section data-date="2025-09-06">
-          <figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
             <img src="./foto/2025-09-06_124458.jpg" alt="2025-09-06 12:44:58" />
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
@@ -758,378 +712,218 @@
            
   </div>
 
-  <!-- Anteprima hover -->
-  <div class="hover-preview" id="hoverPreview" aria-hidden="true">
-    <div class="hover-card">
-      <div class="hover-media"><img id="hoverImg" alt="" /></div>
-      <div class="hover-cap" id="hoverCap"></div>
-    </div>
-  </div>
-
-  <!-- Drawer giorno -->
-  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Dettagli del giorno">
+  <aside class="drawer" id="drawer">
     <div class="bar">
-      <div class="spacer"></div>
       <h2 id="drawerTitle">—</h2>
-      <div class="azioni">
-        <button class="btn" id="prevWithPhotos2" title="Giorno precedente con foto">← Giorno con foto</button>
-        <button class="btn" id="nextWithPhotos2" title="Prossimo giorno con foto">Giorno con foto →</button>
-        <button class="btn" id="chiudiDrawer" aria-label="Chiudi">Chiudi</button>
+      <div>
+        <button class="btn" id="prevWithPhotos2">← Giorno con foto</button>
+        <button class="btn" id="nextWithPhotos2">Giorno con foto →</button>
+        <button class="btn" id="chiudiDrawer">Chiudi</button>
       </div>
-      <aside class="drawer" id="filterDrawer" aria-hidden="true" aria-label="Filtro per persona">
-        <div class="bar">
-          <h2 id="filterTitle">Filtri</h2>
-          <button class="btn" id="chiudiFiltro">Chiudi</button>
-        </div>
-        <div class="body">
-          <div id="filterList"></div>
-          <div id="filterPhotos"></div>
-        </div>
-      </aside>
+    </div>
+    <div class="body"><div class="foto" id="photoGrid"></div></div>
+  </aside>
+  
+  <aside class="drawer" id="filterDrawer">
+    <div class="bar">
+      <h2 id="filterTitle">Filtri</h2>
+      <button class="btn" id="chiudiFiltro">Chiudi</button>
     </div>
     <div class="body">
-      <div class="foto" id="photoGrid"></div>
+      <div id="filterList"></div>
+      <div id="filterPhotos"></div>
     </div>
   </aside>
-
-  <!-- Modal immagine -->
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Immagine">
-    <div class="frame"><img id="modalImg" alt="" /></div>
-  </div>
-
-<script>
+  
+  <div class="modal" id="modal"><div class="frame"><img id="modalImg" alt="" /></div></div>
+  
+  <script>
 (function(){
-  const RANGE = { startYear: 2019, endYear: 2025 };
-  const WEEK_START = 1; // Lunedì
+  const RANGE={startYear:2019,endYear:2025},WEEK_START=1;
+  let vista=oggiYM(),dati=leggiDaHTML(),giornoSelezionato=null;
+  const elTestaSett=byId('weekdayHead'),elGriglia=byId('grid'),
+        monthSel=byId('monthSel'),yearSel=byId('yearSel'),
+        btnPrev=byId('prevMonth'),btnNext=byId('nextMonth'),btnOggi=byId('todayBtn'),
+        btnPrevWP=byId('prevWithPhotos'),btnNextWP=byId('nextWithPhotos'),
+        btnPrevWP2=byId('prevWithPhotos2'),btnNextWP2=byId('nextWithPhotos2'),
+        monthDisplay=byId('monthDisplay'),
+        drawer=byId('drawer'),drawerTit=byId('drawerTitle'),photoGrid=byId('photoGrid'),
+        chiudiDrawer=byId('chiudiDrawer'),
+        filterBtn=byId('filterBtn'),filterDrawer=byId('filterDrawer'),
+        chiudiFiltro=byId('chiudiFiltro'),filterList=byId('filterList'),filterPhotos=byId('filterPhotos'),
+        modal=byId('modal'),modalImg=byId('modalImg');
 
-  let vista = oggiYM();
-  let dati = leggiDaHTML();          // {'YYYY-MM-DD': [ {src, description, sender?, symbol?} ]}
-  let giornoSelezionato = null;      // 'YYYY-MM-DD'
-
-  // DOM
-  const elTestaSett = byId('weekdayHead');
-  const elGriglia   = byId('grid');
-  const monthSel    = byId('monthSel');
-  const yearSel     = byId('yearSel');
-  const btnPrev     = byId('prevMonth');
-  const btnNext     = byId('nextMonth');
-  const btnOggi     = byId('todayBtn');
-  const btnPrevWP   = byId('prevWithPhotos');
-  const btnNextWP   = byId('nextWithPhotos');
-  const btnPrevWP2  = byId('prevWithPhotos2');
-  const btnNextWP2  = byId('nextWithPhotos2');
-  const monthDisplay= byId('monthDisplay');
-
-  const drawer      = byId('drawer');
-  const drawerTit   = byId('drawerTitle');
-  const photoGrid   = byId('photoGrid');
-  const chiudiDrawer= byId('chiudiDrawer');
-
-  const modal       = byId('modal');
-  const modalImg    = byId('modalImg');
-
-  const hoverPrev   = byId('hoverPreview');
-  const hoverImg    = byId('hoverImg');
-  const hoverCap    = byId('hoverCap');
-
-  let hoverTimer = null;
-  const cellTimers = [];
-
-  // Init
-  renderIntestazioni();
-  initSelettori();
-  renderCalendario();
-  aggiornaMonthDisplay();
+  renderIntestazioni();initSelettori();caricaDescrizioni();renderCalendario();aggiornaMonthDisplay();
 
   function renderIntestazioni(){
-    const fmt = new Intl.DateTimeFormat('it-IT',{weekday:'short'});
-    const base = new Date(2024,0,1);
-    elTestaSett.innerHTML = '';
-    const ordine = [];
-    for (let i=0;i<7;i++) ordine.push((i + WEEK_START) % 7);
-    ordine.forEach(dow=>{
-      const d = new Date(base);
-      d.setDate(d.getDate() + ((dow - d.getDay() + 7) % 7));
-      const cell = document.createElement('div');
-      cell.textContent = fmt.format(d).toUpperCase();
+    const fmt=new Intl.DateTimeFormat('it-IT',{weekday:'short'}),base=new Date(2024,0,1);
+    elTestaSett.innerHTML='';
+    for(let i=0;i<7;i++){
+      const dow=(i+WEEK_START)%7;
+      const d=new Date(base);
+      d.setDate(d.getDate()+((dow-d.getDay()+7)%7));
+      const cell=document.createElement('div');
+      cell.textContent=fmt.format(d).toUpperCase();
       elTestaSett.appendChild(cell);
-    });
+    }
   }
-
   function initSelettori(){
-    const mFmt = new Intl.DateTimeFormat('it-IT',{month:'long'});
-    monthSel.innerHTML = '';
-    for (let m=0;m<12;m++){
-      const opt = document.createElement('option');
-      opt.value = m; opt.textContent = capitalize(mFmt.format(new Date(2024,m,1)));
-      monthSel.appendChild(opt);
+    const mFmt=new Intl.DateTimeFormat('it-IT',{month:'long'});
+    monthSel.innerHTML='';
+    for(let m=0;m<12;m++){
+      const o=document.createElement('option');
+      o.value=m;
+      o.textContent=capitalize(mFmt.format(new Date(2024,m,1)));
+      monthSel.appendChild(o);
     }
-    yearSel.innerHTML = '';
-    for (let y=RANGE.startYear; y<=RANGE.endYear; y++){
-      const opt = document.createElement('option');
-      opt.value = y; opt.textContent = y;
-      yearSel.appendChild(opt);
+    for(let y=RANGE.startYear;y<=RANGE.endYear;y++){
+      const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);
     }
-    monthSel.value = String(vista.m);
-    yearSel.value  = String(vista.y);
-
-    monthSel.onchange = ()=>{ vista.m = +monthSel.value; renderCalendario(); aggiornaMonthDisplay(); };
-    yearSel.onchange  = ()=>{ vista.y = +yearSel.value;  renderCalendario(); aggiornaMonthDisplay(); };
-    btnPrev.onclick   = ()=>spostaMese(-1);
-    btnNext.onclick   = ()=>spostaMese(1);
-    btnOggi.onclick   = ()=>{ vista = oggiYM(); syncSel(); renderCalendario(); aggiornaMonthDisplay(); };
-    chiudiDrawer.onclick = chiudiDrawerFn;
-
-    btnPrevWP.onclick = ()=>saltaGiornoConFoto(-1);
-    btnNextWP.onclick = ()=>saltaGiornoConFoto(1);
-    btnPrevWP2.onclick = ()=>saltaGiornoConFoto(-1);
-    btnNextWP2.onclick = ()=>saltaGiornoConFoto(1);
-
-    modal.addEventListener('click', e=>{ if(e.target===modal) chiudiModal(); });
-
-    window.addEventListener('keydown', e=>{
-      if(e.key==='Escape'){
-        if(modal.classList.contains('aperta')) chiudiModal();
-        else if(drawer.classList.contains('aperta')) chiudiDrawerFn();
-      }
-    });
+    monthSel.value=vista.m;yearSel.value=vista.y;
+    monthSel.onchange=()=>{vista.m=+monthSel.value;renderCalendario();aggiornaMonthDisplay();};
+    yearSel.onchange=()=>{vista.y=+yearSel.value;renderCalendario();aggiornaMonthDisplay();};
+    btnPrev.onclick=()=>spostaMese(-1);btnNext.onclick=()=>spostaMese(1);
+    btnOggi.onclick=()=>{vista=oggiYM();syncSel();renderCalendario();aggiornaMonthDisplay();};
+    btnPrevWP.onclick=()=>saltaGiornoConFoto(-1);btnNextWP.onclick=()=>saltaGiornoConFoto(1);
+    btnPrevWP2.onclick=()=>saltaGiornoConFoto(-1);btnNextWP2.onclick=()=>saltaGiornoConFoto(1);
+    chiudiDrawer.onclick=()=>drawer.classList.remove('aperta');
+    filterBtn.onclick=()=>apriFiltro();chiudiFiltro.onclick=()=>filterDrawer.classList.remove('aperta');
+    modal.addEventListener('click',e=>{if(e.target===modal)chiudiModal();});
   }
-
   function aggiornaMonthDisplay(){
-    const dt = new Date(vista.y, vista.m, 1);
-    const lab = new Intl.DateTimeFormat('it-IT',{month:'long', year:'numeric'}).format(dt);
-    monthDisplay.textContent = capitalize(lab);
+    monthDisplay.textContent=capitalize(new Intl.DateTimeFormat('it-IT',{month:'long',year:'numeric'}).format(new Date(vista.y,vista.m,1)));
   }
-  function syncSel(){ monthSel.value = String(vista.m); yearSel.value = String(vista.y); }
-
+  function syncSel(){monthSel.value=vista.m;yearSel.value=vista.y;}
   function renderCalendario(){
-    while (cellTimers.length) clearInterval(cellTimers.pop());
-    elGriglia.innerHTML = '';
-
-    const y = clamp(vista.y, RANGE.startYear, RANGE.endYear);
-    const m = clamp(vista.m, 0, 11);
-    vista = { y, m };
-
-    const primo = new Date(y, m, 1);
-    const offset = mod((primo.getDay() - WEEK_START), 7);
-    const start = new Date(primo.getTime());
-    start.setDate(1 - offset);
-
-    const oggi = new Date(); const oY=oggi.getFullYear(), oM=oggi.getMonth(), oD=oggi.getDate();
-
-    for (let i=0;i<42;i++){
-      const d = new Date(start.getTime()); d.setDate(start.getDate()+i);
-      const iso = toISO(d);
-      const inMese = d.getMonth()===m;
-      const cell = document.createElement('div');
-      cell.className = 'cell' + (inMese ? '' : ' muted');
-      if (d.getFullYear()===oY && d.getMonth()===oM && d.getDate()===oD) cell.classList.add('oggi');
-
-      const head = document.createElement('div'); head.className='date-num'; head.textContent = d.getDate(); cell.appendChild(head);
-
-      const eventi = dati[iso] || [];
-      if (eventi.length){
-        const thumb = document.createElement('div'); thumb.className='thumb';
-        const slides = document.createElement('div'); slides.className='slides'; thumb.appendChild(slides);
-        eventi.forEach((ev, idx)=>{
-          const im = document.createElement('img'); im.src = ev.src; im.alt = ev.description||'';
-          im.className = 'slide' + (idx===0 ? ' attiva' : '');
-          slides.appendChild(im);
-        });
-        cell.appendChild(thumb);
-
-        if (eventi.length>1){
-          let idx=0; const imgs=[...slides.querySelectorAll('.slide')];
-          const timer = setInterval(()=>{
-            imgs[idx].classList.remove('attiva');
-            idx = (idx+1) % imgs.length;
-            imgs[idx].classList.add('attiva');
-          }, 3000);
-          cellTimers.push(timer);
-        }
-
-        cell.addEventListener('mouseenter', ()=>apriHover(cell, iso));
-        cell.addEventListener('mouseleave', chiudiHover);
+    elGriglia.innerHTML='';
+    const primo=new Date(vista.y,vista.m,1);
+    const offset=mod(primo.getDay()-WEEK_START,7);
+    const start=new Date(primo);start.setDate(1-offset);
+    const oggi=new Date();
+    for(let i=0;i<42;i++){
+      const d=new Date(start);d.setDate(start.getDate()+i);
+      const iso=toISO(d);
+      const inMese=d.getMonth()===vista.m;
+      const cell=document.createElement('div');
+      cell.className='cell'+(inMese?'':' muted');
+      if(d.toDateString()===oggi.toDateString())cell.classList.add('oggi');
+      const head=document.createElement('div');
+      head.className='date-num';head.textContent=d.getDate();
+      cell.appendChild(head);
+      const eventi=dati[iso]||[];
+      if(eventi.length){
+        const thumb=document.createElement('div');thumb.className='thumb';
+        const im=document.createElement('img');im.src=eventi[0].src;im.className='slide attiva';
+        thumb.appendChild(im);cell.appendChild(thumb);
+        cell.onclick=()=>apriGiorno(iso);
       }
-      cell.addEventListener('click', ()=>apriGiorno(iso));
       elGriglia.appendChild(cell);
     }
   }
 
-  function apriHover(cell, iso){
-    const lista = dati[iso]||[]; if(!lista.length) return;
-    hoverImg.src = lista[0].src; hoverCap.textContent = lista[0].description || '';
-    const r = cell.getBoundingClientRect(); const pad=8, W=360, H=280;
-    let x = r.left + window.scrollX + r.width + pad;
-    let y = r.top  + window.scrollY - (H - r.height)/2;
-    if (x + W > window.scrollX + window.innerWidth - 8) x = r.left + window.scrollX - W - pad;
-    y = Math.max(window.scrollY + 8, Math.min(y, window.scrollY + window.innerHeight - H - 8));
-    hoverPrev.style.left = x+'px'; hoverPrev.style.top = y+'px';
-    hoverPrev.classList.add('aperta'); hoverPrev.setAttribute('aria-hidden','false');
-
-    stopHoverTimer();
-    if (lista.length>1){
-      let idx=0;
-      hoverTimer = setInterval(()=>{
-        idx = (idx+1) % lista.length;
-        hoverImg.src = lista[idx].src; hoverCap.textContent = lista[idx].description || '';
-      }, 3000);
-    }
-  }
-  function chiudiHover(){ stopHoverTimer(); hoverPrev.classList.remove('aperta'); hoverPrev.setAttribute('aria-hidden','true'); }
-  function stopHoverTimer(){ if(hoverTimer){ clearInterval(hoverTimer); hoverTimer=null; } }
-
   function apriGiorno(iso){
-    chiudiHover();
-    giornoSelezionato = iso;
-    const d = toDate(iso);
-    drawerTit.textContent = capitalize(new Intl.DateTimeFormat('it-IT',{weekday:'long', day:'2-digit', month:'long', year:'numeric'}).format(d));
+    giornoSelezionato=iso;
+    const d=toDate(iso);
+    drawerTit.textContent=new Intl.DateTimeFormat('it-IT',{
+      day:'2-digit',month:'long',year:'numeric'
+    }).format(d);
     renderGiorno(iso);
-    drawer.classList.add('aperta'); drawer.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
+    drawer.classList.add('aperta');
   }
-  function chiudiDrawerFn(){ drawer.classList.remove('aperta'); drawer.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
 
   function renderGiorno(iso){
-    photoGrid.innerHTML = '';
-    const lista = dati[iso] || [];
-    if (!lista.length){
-      photoGrid.innerHTML = `<p style="color:var(--muted)">Nessuna foto per questo giorno.</p>`;
-      return;
-    }
-    lista.forEach((item, idx)=>{
-      const card = document.createElement('article'); card.className='card';
-
-      const media = document.createElement('div'); media.className='media';
-      const img = document.createElement('img'); img.src=item.src; img.alt=item.description||'';
-      img.addEventListener('click', ()=>apriModal(item.src, item.description||''));
+    photoGrid.innerHTML='';
+    (dati[iso]||[]).forEach((item,idx)=>{
+      const card=document.createElement('div');card.className='card';
+      const media=document.createElement('div');media.className='media';
+      const img=document.createElement('img');
+      img.src=item.src;img.alt=item.description||'';
+      img.addEventListener('click',()=>apriModal(item.src,item.description||''));
       media.appendChild(img);
-
-      // Riga meta: mittente + descrizione editabile
-      const meta = document.createElement('div'); meta.className='meta';
-      const badge = document.createElement('span'); badge.className='sender-badge';
-      const sym = item.symbol || '👤';
-      const who = item.sender || 'Sconosciuto';
-      badge.textContent = `${sym} ${who}`;
-      const cap = document.createElement('div'); cap.className='cap'; cap.contentEditable = "true";
-      cap.spellcheck = false;
-      cap.textContent = item.description || 'Descrizione segnaposto';
-      cap.addEventListener('blur', ()=>{
-        const nuovo = cap.textContent.trim();
-        item.description = nuovo;
-        // Aggiorna nel blocco HTML sorgente
-        const fig = getFiguraHTML(iso, idx);
-        if (fig){
-          const fc = fig.querySelector('figcaption') || fig.appendChild(document.createElement('figcaption'));
-          fc.textContent = nuovo || 'Descrizione segnaposto';
-          const im = fig.querySelector('img'); if (im && !im.getAttribute('alt')) im.setAttribute('alt', nuovo);
-        }
-        if (idx===0 && hoverPrev.classList.contains('aperta')) hoverCap.textContent = nuovo;
-      });
-      meta.appendChild(badge);
-      meta.appendChild(cap);
-
-      const az = document.createElement('div'); az.className='riga-azioni';
-      const dl = document.createElement('a'); dl.className='ico-btn'; dl.textContent='Scarica';
-      dl.href = item.src; dl.setAttribute('download', suggerisciNome(iso, idx));
-      az.appendChild(dl);
-
-      const rm = document.createElement('button'); rm.className='ico-btn'; rm.textContent='Rimuovi';
-      rm.onclick = ()=>{
-        if (!confirm('Rimuovere questa foto dal giorno?')) return;
-        dati[iso].splice(idx,1);
-        if (dati[iso].length===0) delete dati[iso];
-        const fig = getFiguraHTML(iso, idx);
-        if (fig && fig.parentElement){ fig.parentElement.removeChild(fig); }
-        renderCalendario();
-        if (dati[giornoSelezionato]) renderGiorno(giornoSelezionato); else chiudiDrawerFn();
-      };
-
-      az.appendChild(rm);
-
-      card.appendChild(media);
-      card.appendChild(meta);
-      card.appendChild(az);
+      const meta=document.createElement('div');meta.className='meta';
+      const badge=document.createElement('span');badge.className='sender-badge';
+      badge.textContent=(item.symbol||'👤')+' '+(item.sender||'Sconosciuto');
+      const cap=document.createElement('div');cap.className='cap';
+      cap.contentEditable="true";cap.spellcheck=false;cap.textContent=item.description||'';
+      cap.addEventListener('blur',()=>{const nuovo=cap.textContent.trim();item.description=nuovo;salvaDescrizione(iso,idx,nuovo);});
+      meta.appendChild(badge);meta.appendChild(cap);
+      const az=document.createElement('div');az.className='riga-azioni';
+      const dl=document.createElement('a');dl.className='ico-btn';dl.textContent='Scarica';dl.href=item.src;dl.download=`${iso}_foto${idx+1}.jpg`;az.appendChild(dl);
+      card.appendChild(media);card.appendChild(meta);card.appendChild(az);
       photoGrid.appendChild(card);
     });
   }
 
-  // Modal
-  function apriModal(src, alt){ modalImg.src=src; modalImg.alt=alt; modal.classList.add('aperta'); document.body.style.overflow='hidden'; }
-  function chiudiModal(){ modal.classList.remove('aperta'); modalImg.src=''; modalImg.alt=''; document.body.style.overflow=''; }
-
   function saltaGiornoConFoto(dir){
-    const chiavi = Object.keys(dati).sort();
-    if (chiavi.length===0) return;
-    let base = giornoSelezionato;
-    if (!base){
-      const inMese = chiavi.filter(k => {
-        const td = toDate(k); return td.getFullYear()===vista.y && td.getMonth()===vista.m;
-      });
-      base = inMese.length ? inMese[0] : chiavi[0];
-    }
-    const idx = chiavi.indexOf(base);
-    let nextIdx = idx<0 ? (dir>0?0:chiavi.length-1) : idx + dir;
-    nextIdx = Math.max(0, Math.min(chiavi.length-1, nextIdx));
-    const target = chiavi[nextIdx];
-    const d = toDate(target);
-    vista.y = d.getFullYear(); vista.m = d.getMonth(); syncSel(); renderCalendario(); aggiornaMonthDisplay();
-    apriGiorno(target);
+    const chiavi=Object.keys(dati).sort();if(!chiavi.length)return;
+    let idx=chiavi.indexOf(giornoSelezionato);if(idx<0)idx=0;
+    let next=idx+dir;if(next<0)next=0;if(next>=chiavi.length)next=chiavi.length-1;
+    const target=chiavi[next];
+    vista.y=new Date(target).getFullYear();vista.m=new Date(target).getMonth();
+    syncSel();renderCalendario();aggiornaMonthDisplay();apriGiorno(target);
   }
 
-  // ====== Lettura HTML con mittente/simbolo ======
-  function getFiguraHTML(iso, idx){
-    const sec = byId('data')?.querySelector(`section[data-date="${iso}"]`);
-    if (!sec) return null;
-    const figs = sec.querySelectorAll('figure');
-    return figs[idx] || null;
+  function apriFiltro(){renderListaFiltri();filterDrawer.classList.add('aperta');}
+  function renderListaFiltri(){
+    filterList.innerHTML='';filterPhotos.innerHTML='';
+    const senders=new Set();
+    Object.values(dati).forEach(arr=>arr.forEach(ev=>{if(ev.sender)senders.add(ev.sender);}));
+    [...senders].sort().forEach(sender=>{
+      const chip=document.createElement('div');
+      chip.className='filter-chip';chip.textContent=sender;
+      chip.onclick=()=>renderFiltroFoto(sender);
+      filterList.appendChild(chip);
+    });
   }
+  function renderFiltroFoto(sender){
+    filterPhotos.innerHTML='';filterList.innerHTML='';
+    const back=document.createElement('div');back.className='filter-chip';
+    back.textContent='← Indietro';back.onclick=()=>renderListaFiltri();
+    filterList.appendChild(back);
+    Object.entries(dati).sort().forEach(([date,arr])=>{
+      arr.filter(ev=>ev.sender===sender).forEach(ev=>{
+        const d=toDate(date);
+        const dateLabel=document.createElement('div');
+        dateLabel.className='group-date';
+        dateLabel.textContent=new Intl.DateTimeFormat('it-IT',{
+          day:'2-digit',month:'long',year:'numeric'
+        }).format(d);
+        filterPhotos.appendChild(dateLabel);
 
-  function leggiDaHTML(){
-    const root = byId('data'); const out = {};
-    if (!root) return out;
-    root.querySelectorAll('section[data-date]')?.forEach(sec=>{
-      const data = (sec.getAttribute('data-date')||'').trim();
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return;
-      const figs = sec.querySelectorAll('figure');
-      figs.forEach(fig=>{
-        const img = fig.querySelector('img'); if (!img) return;
-        const cap = fig.querySelector('figcaption');
-        const sender = fig.getAttribute('data-sender') || '';
-        const symbol = fig.getAttribute('data-symbol') || '';
-        (out[data] ||= []).push({
-          src: img.getAttribute('src')||'',
-          description: (cap?.textContent||'').trim() || 'Descrizione segnaposto',
-          sender: sender,
-          symbol: symbol
-        });
+        const card=document.createElement('div');card.className='card';
+        const media=document.createElement('div');media.className='media';
+        const img=document.createElement('img');
+        img.src=ev.src;img.alt=ev.description||'';
+        img.addEventListener('click',()=>apriModal(ev.src,ev.description||''));
+        media.appendChild(img);
+        const meta=document.createElement('div');meta.className='meta';
+        const badge=document.createElement('span');badge.className='sender-badge';
+        badge.textContent=(ev.symbol||'👤')+' '+(ev.sender||'Sconosciuto');
+        const cap=document.createElement('div');cap.className='cap';
+        cap.textContent=ev.description||'';meta.appendChild(badge);meta.appendChild(cap);
+        const az=document.createElement('div');az.className='riga-azioni';
+        const dl=document.createElement('a');dl.className='ico-btn';dl.textContent='Scarica';
+        dl.href=ev.src;dl.download=`${date}_foto.jpg`;az.appendChild(dl);
+        card.appendChild(media);card.appendChild(meta);card.appendChild(az);
+        filterPhotos.appendChild(card);
       });
     });
-    return out;
   }
 
-  // Utils
-  function byId(id){ return document.getElementById(id); }
-  function toISO(d){ const z=new Date(d.getTime()); z.setHours(12,0,0,0); return z.toISOString().slice(0,10); }
-  function toDate(iso){ return new Date(iso+'T12:00:00'); }
-  function mod(a,b){ return (a%b + b)%b; }
-  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-  function oggiYM(){ const t=new Date(); return { y:t.getFullYear(), m:t.getMonth() }; }
-  function spostaMese(step){
-    let y=vista.y, m=vista.m + step;
-    if (m<0){ m=11; y--; } else if (m>11){ m=0; y++; }
-    if (y < RANGE.startYear || y > RANGE.endYear) return;
-    vista={y,m}; syncSel(); renderCalendario(); aggiornaMonthDisplay();
-  }
-  function capitalize(s){ return s ? s[0].toUpperCase() + s.slice(1) : s; }
-  function suggerisciNome(iso, idx){
-    return iso + '_foto' + String(idx+1).padStart(2,'0') + '.jpg';
-  }
-  
+  function apriModal(src,alt){modalImg.src=src;modalImg.alt=alt;modal.classList.add('aperta');document.body.style.overflow='hidden';}
+  function chiudiModal(){modal.classList.remove('aperta');modalImg.src='';document.body.style.overflow='';}
+  function salvaDescrizione(date,index,text){localStorage.setItem(`desc_${date}_${index}`,text);}
+  function caricaDescrizioni(){Object.entries(dati).forEach(([date,arr])=>{arr.forEach((item,idx)=>{const val=localStorage.getItem(`desc_${date}_${idx}`);if(val!==null)item.description=val;});});}
+  function byId(id){return document.getElementById(id);}
+  function toISO(d){d.setHours(12,0,0,0);return d.toISOString().slice(0,10);}
+  function toDate(iso){return new Date(iso+'T12:00:00');}
+  function oggiYM(){const t=new Date();return{y:t.getFullYear(),m:t.getMonth()};}
+  function mod(a,b){return(a%b+b)%b;}
+  function capitalize(s){return s? s[0].toUpperCase()+s.slice(1):s;}
+  function spostaMese(step){let y=vista.y,m=vista.m+step;if(m<0){m=11;y--;}else if(m>11){m=0;y++;}vista={y,m};syncSel();renderCalendario();aggiornaMonthDisplay();}
+  function leggiDaHTML(){const root=byId('data'),out={};if(!root)return out;root.querySelectorAll('section[data-date]').forEach(sec=>{const data=sec.dataset.date;if(!/^\d{4}-\d{2}-\d{2}$/.test(data))return;sec.querySelectorAll('figure').forEach(fig=>{const img=fig.querySelector('img');if(!img)return;const cap=fig.querySelector('figcaption');const sender=fig.dataset.sender||'';const symbol=fig.dataset.symbol||'';(out[data] ||= []).push({src:img.src,description:(cap?.textContent||''),sender,symbol});});});return out;}
+
 })();
 </script>
 </body>
 </html>
-
-
-
