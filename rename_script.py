@@ -3,7 +3,9 @@
 Rename photos/videos by actual capture date using exiftool.
 - Works with HEIC, JPG/JPEG, PNG, MOV, MP4.
 - Prefers: DateTimeOriginal (photos) -> MediaCreateDate (videos) -> CreateDate -> TrackCreateDate.
-- Falls back to file mtime only if no metadata exists (which yields “today” on recent downloads).
+- Skips files with no metadata capture date.
+- Skips files whose metadata date is between today and N days ago (default N=5).
+- Falls back to file mtime ONLY if --allow-mtime is provided.
 - Adds -1, -2, ... if multiple files share the same second.
 
 Usage:
@@ -16,7 +18,7 @@ import json
 import shutil
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 VALID_EXTS = {".heic", ".jpg", ".jpeg", ".png", ".mov", ".mp4"}
@@ -31,7 +33,6 @@ def parse_dt_str(s: str):
         return None
     s = s.strip().replace("UTC ", "").replace("utc ", "")
     s = s.replace("Z", "+00:00")  # ISO-ish
-    # common formats seen from exiftool JSON
     fmts = [
         "%Y:%m:%d %H:%M:%S%z",
         "%Y:%m:%d %H:%M:%S",
@@ -79,13 +80,6 @@ def get_dt_via_exiftool(path: Path):
                 return dt
     return None
 
-def best_datetime(path: Path):
-    dt = get_dt_via_exiftool(path)
-    if dt:
-        return dt
-    # last resort: file mtime (often "today" after download)
-    return datetime.fromtimestamp(path.stat().st_mtime)
-
 def build_target_name(dt: datetime, ext: str, taken_lower: set, pattern: str):
     base = dt.strftime(pattern)
     ext_lc = ext.lower()
@@ -108,10 +102,22 @@ def main():
     ap.add_argument("folder", help="Folder to process")
     ap.add_argument("-r", "--recursive", action="store_true", help="Process subfolders")
     ap.add_argument("--dry-run", action="store_true", help="Show planned changes only")
+    ap.add_argument("--verbose-skip", action="store_true", help="Print reasons for skipped files")
     ap.add_argument(
         "--pattern",
         default="%Y-%m-%d_%H%M%S",
         help="strftime pattern for filename stem (default: %(default)s)"
+    )
+    ap.add_argument(
+        "--recent-days",
+        type=int,
+        default=5,
+        help="Skip files whose metadata date is within the last N days (default: 5; use 0 to disable)."
+    )
+    ap.add_argument(
+        "--allow-mtime",
+        action="store_true",
+        help="If set, fall back to file mtime when no metadata date is available (otherwise skip)."
     )
     args = ap.parse_args()
 
@@ -121,12 +127,35 @@ def main():
     if not root.exists() or not root.is_dir():
         sys.exit("Path is not a folder.")
 
+    # For the recent window
+    now = datetime.now()
+    cutoff = now - timedelta(days=max(args.recent_days, 0))
+
     # Track existing names per directory to avoid collisions
     taken_map = {}
     planned = []
 
+    skipped_missing = 0
+    skipped_recent = 0
+
     for f in sorted(iter_files(root, args.recursive)):
-        dt = best_datetime(f)
+        dt = get_dt_via_exiftool(f)
+        if dt is None:
+            if args.allow_mtime:
+                dt = datetime.fromtimestamp(f.stat().st_mtime)
+            else:
+                skipped_missing += 1
+                if args.verbose_skip:
+                    print(f"[SKIP missing date] {f}")
+                continue
+
+        # Skip recent files if requested
+        if args.recent_days > 0 and cutoff <= dt <= now:
+            skipped_recent += 1
+            if args.verbose_skip:
+                print(f"[SKIP recent {args.recent_days}d] {f}  ({dt.strftime('%Y-%m-%d %H:%M:%S')})")
+            continue
+
         d = f.parent
         taken = taken_map.setdefault(
             str(d),
@@ -141,6 +170,10 @@ def main():
         for src, dst in planned:
             print(f"[DRY] {src}  ->  {dst}")
         print(f"\nTotal to rename: {len(planned)}")
+        if skipped_missing:
+            print(f"Skipped (no metadata date): {skipped_missing}")
+        if skipped_recent:
+            print(f"Skipped (within last {args.recent_days} days): {skipped_recent}")
         return
 
     # Do the rename
@@ -153,6 +186,10 @@ def main():
         except Exception as e:
             print(f"FAILED: {src} -> {dst}  ({e})", file=sys.stderr)
     print(f"\nDone. Renamed {count} files out of {len(planned)} planned.")
+    if skipped_missing:
+        print(f"Skipped (no metadata date): {skipped_missing}")
+    if skipped_recent:
+        print(f"Skipped (within last {args.recent_days} days): {skipped_recent}")
 
 if __name__ == "__main__":
     main()
