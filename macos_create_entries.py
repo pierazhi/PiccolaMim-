@@ -11,16 +11,17 @@ Usage:
 """
 
 import argparse
+import html
 import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
-DEFAULT_EXTS = {".jpg", ".jpeg"}  # extend via --ext if you like (png/webp/etc.)
+DEFAULT_EXTS = {".jpg", ".jpeg"}  # extend via --ext (png/webp/etc.)
 
-# Match at the START of the stem, so "2024-04-26(1).jpg" still parses the date.
-DATE_ONLY_RE = re.compile(r"^(?P<y>\d{4})_(?P<m>\d{2})_(?P<d>\d{2})")
+# Start-of-stem match. Accepts "-" or "_" as separators: 2024-04-26, 2024_04_26.
+DATE_ONLY_RE = re.compile(r"^(?P<y>\d{4})[-_](?P<m>\d{2})[-_](?P<d>\d{2})")
 
 def natural_key(s: str):
     # Human-ish sort: file2 < file10
@@ -32,28 +33,32 @@ def collect_files(root: Path, recursive: bool, exts: List[str]) -> List[Path]:
         files = [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in extset]
     else:
         files = [p for p in root.iterdir() if p.is_file() and p.suffix.lower() in extset]
-    files.sort(key=lambda p: natural_key(p.name))
+    # Sort by relative path string naturally for deterministic order across subfolders
+    files.sort(key=lambda p: natural_key(p.relative_to(root).as_posix()))
     return files
 
 def parse_day_from_stem(stem: str) -> str:
     m = DATE_ONLY_RE.match(stem)
     if not m:
-        raise ValueError("filename does not start with YYYY-MM-DD")
+        raise ValueError("filename does not start with YYYY-MM-DD or YYYY_MM_DD")
     y, mo, d = int(m.group("y")), int(m.group("m")), int(m.group("d"))
-    # basic sanity
-    datetime(y, mo, d)
+    datetime(y, mo, d)  # sanity
     return f"{y:04d}-{mo:02d}-{d:02d}"
 
 def build_entries(groups: Dict[str, List[Path]], base_url: str, root: Path,
                   sender: str, symbol: str) -> str:
+    esc_sender = html.escape(sender, quote=True)
+    esc_symbol = html.escape(symbol, quote=True)
+
     lines: List[str] = []
     for day in sorted(groups.keys()):
         lines.append(f'<section data-date="{day}">')
         for path in groups[day]:
             rel = path.relative_to(root).as_posix()
             src = f"{base_url.rstrip('/')}/{rel}" if base_url else rel
-            alt = sender if sender else "foto"
-            lines.append(f'  <figure data-sender="{sender}" data-symbol="{symbol}">')
+            # Alt text: simple and non-annoying. If you want the filename, swap to path.stem.
+            alt = day
+            lines.append(f'  <figure data-sender="{esc_sender}" data-symbol="{esc_symbol}">')
             lines.append(f'    <img src="{src}" alt="{alt}" />')
             lines.append('    <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>')
             lines.append('  </figure>')
@@ -66,11 +71,11 @@ def main():
     ap.add_argument("-r", "--recursive", action="store_true", help="Scan subfolders too")
     ap.add_argument("--ext", action="append", help="Extra extension(s) to include (repeatable)")
     ap.add_argument("--base-url", default="./foto", help="Prefix for image src (default: ./foto)")
-    ap.add_argument("--sender", default="Fra 🍐", help="data-sender value (default: 'Fra 🍐')")
-    ap.add_argument("--symbol", default="🍐", help="data-symbol value (default: '🍐')")
+    ap.add_argument("--sender", default="Cicì 🐒", help="data-sender value (default: 'Fra 🍐')")
+    ap.add_argument("--symbol", default="🐒", help="data-symbol value (default: '🍐')")
     ap.add_argument("--out", default="", help="Write output to file instead of stdout")
     ap.add_argument("--skip-nonmatching", action="store_true",
-                    help="Silently skip files not starting with YYYY-MM-DD")
+                    help="Silently skip files not starting with YYYY[-_]MM[-_]DD")
     args = ap.parse_args()
 
     root = Path(args.folder).expanduser().resolve()
@@ -80,11 +85,13 @@ def main():
     exts = list(DEFAULT_EXTS)
     if args.ext:
         for e in args.ext:
-            exts.append("." + e.lower().lstrip("."))
+            norm = "." + e.lower().lstrip(".")
+            if norm not in exts:
+                exts.append(norm)
 
     files = collect_files(root, args.recursive, exts)
     if not files:
-        raise SystemExit("No matching image files found.")
+        raise SystemExit("No matching image files found (try --ext png or webp).")
 
     groups: Dict[str, List[Path]] = defaultdict(list)
     skipped = []
@@ -99,19 +106,19 @@ def main():
             skipped.append(p)
 
     if not groups:
-        raise SystemExit("No filenames matched the expected pattern YYYY-MM-DD.*")
+        raise SystemExit("No filenames matched the expected pattern YYYY[-_]MM[-_]DD.*")
 
-    html = build_entries(groups, args.base_url, root, args.sender, args.symbol)
+    html_out = build_entries(groups, args.base_url, root, args.sender, args.symbol)
 
     if args.out:
-        Path(args.out).write_text(html, encoding="utf-8")
+        Path(args.out).write_text(html_out, encoding="utf-8")
         print(f"Wrote {args.out}")
         if skipped:
             print(f"Skipped {len(skipped)} non-matching file(s).")
     else:
-        print(html)
+        print(html_out)
         if skipped:
             print(f"\n<!-- Skipped {len(skipped)} non-matching file(s). -->")
 
-if __name__ == "__main  __":
+if __name__ == "__main__":
     main()
