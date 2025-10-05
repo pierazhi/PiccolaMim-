@@ -1,0 +1,1696 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Galleria Calendario — Laurea di Mimì</title>
+<meta name="theme-color" content="#0b0b0b" />
+<style>
+  :root{
+    --bg:#0b0b0b; --card:#141414; --ink:#e8e8e8; --muted:#bdbdbd; --ring:#2f2f2f;
+    --accent:#dedede; --accent-strong:#ffffff; --accent-ink:#0b0b0b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Roboto,Arial,sans-serif}
+  a{color:inherit;text-decoration:none}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:20px}
+  header{position:sticky;top:0;z-index:5;display:flex;flex-direction:column;gap:8px;
+    align-items:center;justify-content:center;padding:14px 0 12px;
+    background:linear-gradient(180deg, rgba(11,11,11,.92), rgba(11,11,11,.72));
+    border-bottom:1px solid var(--ring);backdrop-filter:blur(6px)}
+  header h1{margin:0;font-size:20px;color:var(--accent)}
+  .month-display{font-weight:900;font-size:22px;letter-spacing:.3px;color:var(--accent-strong);text-align:center}
+
+  .controls{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
+  .left,.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);
+    background:var(--card);color:var(--ink);padding:8px 12px;border-radius:10px;
+    cursor:pointer;font-weight:600;font-size:14px;transition:all .15s ease}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .select{appearance:none;border:1px solid var(--ring);background:var(--card);color:var(--ink);
+    padding:8px 12px;border-radius:10px;font-weight:600}
+
+  .calendar{margin-top:14px;border:1px solid var(--ring);border-radius:16px;background:var(--card);overflow:hidden}
+  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--ring)}
+  .cal-head div{padding:10px 8px;text-align:center;font-size:12px;color:var(--muted);font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);min-height:420px}
+  .cell{position:relative;border-right:1px solid var(--ring);border-bottom:1px solid var(--ring);
+    padding:8px;min-height:112px;cursor:pointer}
+  .grid .cell:nth-child(7n){border-right:none}
+  .date-num{font-weight:800;font-size:13px;color:var(--accent);opacity:.9}
+  .cell.muted .date-num{color:#9a9a9a}
+  .cell.oggi{outline:2px solid var(--accent);outline-offset:-2px}
+
+  .thumb{margin-top:6px;border:1px solid var(--ring);background:#000;border-radius:8px;overflow:hidden;position:relative;aspect-ratio:4/3}
+  .thumb .slide{position:absolute;inset:0;opacity:0;transition:opacity .6s ease}
+  .thumb .slide.attiva{opacity:1}
+  .thumb img{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+
+  .drawer{position:fixed;inset:auto 0 0 0;background:#0e0e0e;border-top:1px solid var(--ring);
+    transform:translateY(100%);transition:transform .25s ease;z-index:20;max-height:90vh;overflow:hidden}
+  .drawer.aperta{transform:translateY(0)}
+  .drawer .bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--ring);background:#121212}
+  .drawer h2{margin:0;font-weight:900;font-size:20px;color:var(--accent-strong)}
+  .drawer .body{padding:16px;max-height:calc(90vh - 60px);overflow:auto}
+
+  .foto{display:grid;gap:24px;max-width:900px;margin:0 auto}
+  .card{border:1px solid var(--ring);background:#121212;border-radius:14px;overflow:hidden}
+  .card .media{aspect-ratio:3/2;background:#000;border-bottom:1px solid var(--ring);display:flex;align-items:center;justify-content:center}
+  .card img{max-width:100%;max-height:100%;object-fit:contain;display:block;cursor:pointer}
+
+  .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px}
+  .sender-badge{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;
+    border:1px solid var(--ring);background:#191919;color:var(--ink);padding:4px 8px;border-radius:999px}
+  .cap{font-size:13px;color:var(--muted)}
+  .cap[contenteditable="true"]{outline:1px dashed var(--ring);border-radius:6px;padding:4px 6px}
+
+  .riga-azioni{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px;border-top:1px solid var(--ring);background:#151515}
+  .ico-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ring);background:#191919;color:var(--ink);
+    padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;transition:all .15s ease}
+  .ico-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  #filterList{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .filter-chip{padding:6px 12px;border:1px solid var(--ring);border-radius:999px;
+    background:#191919;color:var(--ink);font-weight:600;cursor:pointer}
+  .filter-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .group-date{font-size:16px;font-weight:700;color:var(--accent-strong);margin:18px 0 8px}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:40}
+  .modal.aperta{display:flex}
+  .modal .frame{max-width:92vw;max-height:88vh;border-radius:12px;overflow:hidden;border:1px solid var(--ring);background:#000}
+  .modal img{max-width:100%;max-height:88vh;object-fit:contain;display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Galleria Calendario</h1>
+    <div class="month-display" id="monthDisplay">—</div>
+  </header>
+
+  <div class="controls" role="group" aria-label="Controlli calendario">
+    <div class="left">
+      <button class="btn" id="prevMonth">◀</button>
+      <button class="btn" id="todayBtn">Oggi</button>
+      <button class="btn" id="nextMonth">▶</button>
+      <button class="btn" id="prevWithPhotos">← Giorno con foto</button>
+      <button class="btn" id="nextWithPhotos">Giorno con foto →</button>
+    </div>
+    <div class="right">
+      <button class="btn" id="filterBtn">Filtri</button>
+      <select id="monthSel" class="select"></select>
+      <select id="yearSel" class="select"></select>
+    </div>
+  </div>
+
+  <section class="calendar" aria-label="Calendario">
+    <div class="cal-head" id="weekdayHead"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+    <!-- ======== DATI (Aggiunti i tuoi giorni con segnaposto) ======== -->
+    <div id="data" class="sr-only">
+      <!-- 2024-04-25 (25/4/2024) -->
+      <section data-date="2024-04-25">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2024-04-25_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-04-26">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2024-04-26_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+      
+      <!-- 2023-10-30 (30/10/2023) -->
+      <section data-date="2023-10-30">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2023-10-30_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2023-04-20 (20/4/2023) -->
+      <section data-date="2023-04-20">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2023-04-20_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2023-03-25 (25/3/2023) -->
+      <section data-date="2023-03-25">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2023-03-25_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2022-11-25 (25/11/2022) -->
+      <section data-date="2022-11-25">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2022-11-25_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2020-07-30 (30/07/2020) — duplicato presente due volte, metto due foto -->
+      <section data-date="2020-07-30">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2020-07-30_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2020-07-30_2.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2020-07-27 (27/07/2020) -->
+      <section data-date="2020-07-27">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2020-07-27_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2022-04-15 (15/04/2022) -->
+      <section data-date="2022-04-15">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2022-04-15_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2025-05-07 (07/05/2025) -->
+      <section data-date="2025-05-07">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2025-05-07_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+
+      <!-- 2023-11-12 (12/11/2023) -->
+      <section data-date="2023-11-12">
+        <figure data-sender="Vincenzo" data-symbol="👤">
+          <img src="./foto/2023-11-12_1.jpg" alt="Descrizione segnaposto" />
+          <figcaption>Descrizione segnaposto</figcaption>
+        </figure>
+      </section>
+      <!-- End of Vincenzo Section -->
+
+      <!-- Start of Fra Section -->
+
+      <section data-date="2024-03-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-03-16_150352.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2019-12-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2019-12-16_201246.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2022-06-23">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022-06-23_174032.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2022-07-07">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022-07-07_225241.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2024-05-25">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-05-25_213151.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-15">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-15_210823.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-26">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-26_123815.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-10-03">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-10-03_001020.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2020-07-30">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2020-07-30_110829.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-10-08">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-10-08_233501.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-10-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-10-16_194447.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-03-03">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-03-03_145055.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-03-03">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-03-03_161312.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-28_163245.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-09-26">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-09-26_164557.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-28_163545.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-28_232257.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-12-05">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-12-05_180201.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-10-31">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-10-31_224203.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-12-18">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-12-18_121612.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2022-03-01">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022-03-01_180506.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2019-11-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2019-11-16_060907.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2021-09-25">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021-09-25_204035.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2019-11-10">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2019-11-10_155132.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-07-29">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-07-29_231242.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2023-09-30">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-09-30_215943.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+            
+      <section data-date="2023-11-18">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023-11-18.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-02-15">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-02-15.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-03-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-03-16.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-05-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-05-28.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-09-26">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-09-26.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-09-27">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-09-27.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-09-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-09-28.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-09-30">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-09-30.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-11-01">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-11-01.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2024-12-04">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2024-12-04.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2025-01-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-01-16.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2025-04-05">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-04-05.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-04-05_2.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2025-04-16">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-04-16.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-04-16_2.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2025-07-02">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2025-07-02.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2019-11-20">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2019_11_20.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      
+      <section data-date="2020-03-10">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2020_03_10.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2020-07-20">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2020_07_20.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2020-07-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2020_07_28.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2021-06-03">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021_06_03.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2021-06-20">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021_06_20.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2021-07-03">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021_07_03.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2021-11-24">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2021_11_24.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2022-03-11">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022_03_11_3.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2022-07-28">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022_07_28.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2022_07_28_3.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+
+      <section data-date="2023-04-20">
+        <figure data-sender="Fra 🍐" data-symbol="🍐">
+          <img src="./foto/2023_04_20.jpg" alt="Fra 🍐" />
+          <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+        </figure>
+      </section>
+      <!-- End of Fra Section -->
+
+      <!-- Start of My Section -->
+        <section data-date="2021-07-31">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2021-07-31_120744.jpg" alt="2021-07-31 12:07:44" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-02-15">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-02-15_011256.jpg" alt="2022-02-15 01:12:56" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-03-11">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-03-11_234205.jpg" alt="2022-03-11 23:42:05" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-03-21">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-03-21_224113.jpg" alt="2022-03-21 22:41:13" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-04-13">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-04-13_131429.jpg" alt="2022-04-13 13:14:29" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-05-14">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-05-14_171545.jpg" alt="2022-05-14 17:15:45" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-05-25">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-05-25_201146.jpg" alt="2022-05-25 20:11:46" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-07-28">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-07-28_223828.jpg" alt="2022-07-28 22:38:28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-08-21">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-08-21_194954.jpg" alt="2022-08-21 17:08:40" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-09-25">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-09-25_113050.jpg" alt="2022-09-25 11:30:50" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-10-09">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-10-09_204625.jpg" alt="2022-10-09 20:46:25" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-10-21">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-10-21_022959.jpg" alt="2022-10-21 02:29:59" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-10-29">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-10-29_003752.jpg" alt="2022-10-29 00:37:52" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-12-26">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-12-26_182733.jpg" alt="2022-12-26 18:27:33" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2022-12-27">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2022-12-27_005732.jpg" alt="2022-12-27 00:57:32" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-01-11">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-01-11_134028.jpg" alt="2023-01-11 13:40:28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-01-12">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-01-12_010829.jpg" alt="2023-01-12 01:08:29" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-01-13">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-01-13_161133.jpg" alt="2023-01-13 16:11:33" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-02-14">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-02-14_185845.jpg" alt="2023-02-14 18:58:45" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-03-02">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-03-02_094714.jpg" alt="2023-03-02 09:47:14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure>
+            <img src="./foto/2023-03-02_105906.jpg" alt="2023-03-02 10:59:06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-03-03">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-03-03_144853.jpg" alt="2023-03-03 14:48:53" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-03-03_232751.jpg" alt="2023-03-03 23:27:51" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-03-22">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-03-22_104101.jpg" alt="2023-03-22 10:41:01" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-03-29">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-03-29_214237.jpg" alt="2023-03-29 21:42:37" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-04-01">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-04-01_094451.jpg" alt="2023-04-01 09:44:51" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-04-15">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-04-15_194527.jpg" alt="2023-04-15 19:45:27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-04-25">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-04-25_122547.jpg" alt="2023-04-25 12:25:47" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-04-25_162104.jpg" alt="2023-04-25 16:21:04" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-06-03">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-06-03_202016.jpg" alt="2023-06-03 20:20:16" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-10-01">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-10-01_185616.jpg" alt="2023-10-01 18:56:16" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-10-30">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-10-30_222105.jpg" alt="2023-10-30 22:21:05" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-10-31">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-10-31_224803.jpg" alt="2023-10-31 22:48:03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-11-09">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-11-09_165806.jpg" alt="2023-11-09 16:58:06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-11-30">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-11-30_212633.jpg" alt="2023-11-30 21:26:33" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2023-12-08">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2023-12-08_154815.jpg" alt="2023-12-08 15:48:15" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-01-01">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-01-01_002739.jpg" alt="2024-01-01 00:27:39" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-02-14">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-02-14_181740.jpg" alt="2024-02-14 18:17:40" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-02-14_203658.jpg" alt="2024-02-14 20:36:58" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-03-03">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-03-03_150026.jpg" alt="2024-03-03 15:00:26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-04-18">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-18_183634.jpg" alt="2024-04-18 18:36:34" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-04-19">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-19_150343.jpg" alt="2024-04-19 15:03:43" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-19_153813.jpg" alt="2024-04-19 15:38:13" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-19_174932.jpg" alt="2024-04-19 17:49:32" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-04-20">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-20_135511.jpg" alt="2024-04-20 13:55:11" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-20_150759.jpg" alt="2024-04-20 15:07:59" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-20_172909.jpg" alt="2024-04-20 17:29:09" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-04-21">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-04-21_222445.jpg" alt="2024-04-21 22:24:45" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-05-01">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-05-01_123458.jpg" alt="2024-05-01 12:34:58" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-07-28">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-07-28_000124.jpg" alt="2024-07-28 00:01:24" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-07-28_000259.jpg" alt="2024-07-28 00:02:59" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-07-28_000330.jpg" alt="2024-07-28 00:03:30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-07-28_000401.jpg" alt="2024-07-28 00:04:01" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-07-28_141130.jpg" alt="2024-07-28 14:11:30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-08-08">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-08-08_011724.jpg" alt="2024-08-08 01:17:24" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-08-11">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-08-11_133006.jpg" alt="2024-08-11 13:30:06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-09-22">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-09-22_153302.jpg" alt="2024-09-22 15:33:02" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-10-30">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-10-30_212006.jpg" alt="2024-10-30 21:20:06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-10-31">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-10-31_120944.jpg" alt="2024-10-31 12:09:44" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-11-09">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-11-09_205019.jpg" alt="2024-11-09 20:50:19" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2024-11-28">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2024-11-28_232936.jpg" alt="2024-11-28 23:29:36" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-01-01">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-01-01_223244.jpg" alt="2025-01-01 22:32:44" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-02-13">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-02-13_222301.jpg" alt="2025-02-13 22:23:01" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-02-14">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-02-14_155808.jpg" alt="2025-02-14 15:58:08" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-03-05">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-03-05_202353.jpg" alt="2025-03-05 20:23:53" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-03-28">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-03-28_111212.jpg" alt="2025-03-28 11:12:12" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-06-27">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-06-27_210900.jpg" alt="2025-06-27 21:09:00" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-06-30">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-06-30_095224.jpg" alt="2025-06-30 09:52:24" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-06-30_132739.jpg" alt="2025-06-30 13:27:39" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-07-22">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-07-22_013423.jpg" alt="2025-07-22 01:34:23" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-07-28">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-07-28_112506.jpg" alt="2025-07-28 11:25:06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-08-14">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-08-14_193902.jpg" alt="2025-08-14 19:39:02" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-08-15">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-08-15_155537.jpg" alt="2025-08-15 15:55:37" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-08-16">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-08-16_221639.jpg" alt="2025-08-16 22:16:39" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-08-20">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-08-20_145658.jpg" alt="2025-08-20 14:56:58" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+      
+        <section data-date="2025-09-06">
+          <figure data-sender="oreiP" data-symbol="🦆">
+            <img src="./foto/2025-09-06_124458.jpg" alt="2025-09-06 12:44:58" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+
+      <!-- Start of Cicì' Section -->
+
+        <section data-date="2019-11-25">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2019-11-25.jpg" alt="2019-11-25" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+
+        <section data-date="2019-12-01">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2019-12-01.jpg" alt="2019-12-01" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2019-12-14">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2019-12-14.jpg" alt="2019-12-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2019-12-18">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2019-12-18.jpg" alt="2019-12-18" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-02-02">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-02-02.jpg" alt="2020-02-02" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-02-04">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-02-04.jpg" alt="2020-02-04" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-02-17">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-02-17.jpg" alt="2020-02-17" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-04-18">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-04-18.jpg" alt="2020-04-18" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-06-24">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-06-24.jpg" alt="2020-06-24" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-07-27">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_1.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_2.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_3.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_4.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_5.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_6.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_7.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-27_8.jpg" alt="2020-07-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-07-30">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-30_1.jpg" alt="2020-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-07-30_2.jpg" alt="2020-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2020-08-03">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2020-08-03.jpg" alt="2020-08-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-06-11">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-11_1.jpg" alt="2021-06-11" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-11_2.jpg" alt="2021-06-11" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-06-23">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-23_1.jpg" alt="2021-06-23" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-23_2.jpg" alt="2021-06-23" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-23_3.jpg" alt="2021-06-23" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-06-26">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-06-26.jpg" alt="2021-06-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-07-30">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-07-30_1.jpg" alt="2021-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-07-30_2.jpg" alt="2021-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-07-30_3.jpg" alt="2021-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-07-30_4.jpg" alt="2021-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-07-30_5.jpg" alt="2021-07-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-08-03">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-08-03_1.jpg" alt="2021-08-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-08-03_2.jpg" alt="2021-08-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-08-03_3.jpg" alt="2021-08-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-08-03_4.jpg" alt="2021-08-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-08">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-08.jpg" alt="2021-10-08" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-18">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-18.jpg" alt="2021-10-18" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-19">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-19.jpg" alt="2021-10-19" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-22">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-22.jpg" alt="2021-10-22" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-26">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-26_1.jpg" alt="2021-10-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-26_2.jpg" alt="2021-10-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-26_3.jpg" alt="2021-10-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-10-31">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-10-31.jpg" alt="2021-10-31" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-11-01">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-11-01.jpg" alt="2021-11-01" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-11-12">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-11-12.jpg" alt="2021-11-12" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-12-06">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-12-06.jpg" alt="2021-12-06" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2021-12-15">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2021-12-15.jpg" alt="2021-12-15" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2022-01-30">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2022-01-30_1.jpg" alt="2022-01-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2022-01-30_2.jpg" alt="2022-01-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2022-01-30_3.jpg" alt="2022-01-30" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2022-02-28">
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2022-02-28_1.jpg" alt="2022-02-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Cicì 🐒" data-symbol="🐒">
+            <img src="./foto/2022-02-28_2.jpg" alt="2022-02-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        
+        <section data-date="2021-08-03">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2021-08-03_5.jpeg" alt="2021-08-05_5" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-02-03">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-02-03.jpeg" alt="2023-02-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-05-14">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-05-14.jpeg" alt="2023-05-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-11-18">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-11-18.jpeg" alt="2023-11-18" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-08-14">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-08-14_1.jpeg" alt="2024-08-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-08-14_2.jpeg" alt="2024-08-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-26">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-26.jpeg" alt="2024-09-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-27">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_1.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_2.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_3.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-28">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-28.jpeg" alt="2024-09-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-11-12">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-11-12.jpeg" alt="2024-11-12" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2025-08-28">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2025-08-28_1.jpeg" alt="2025-08-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2025-08-28_2.jpeg" alt="2025-08-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        
+      
+
+           
+  </div>
+
+  <aside class="drawer" id="drawer">
+    <div class="bar">
+      <h2 id="drawerTitle">—</h2>
+      <div>
+        <button class="btn" id="prevWithPhotos2">← Giorno con foto</button>
+        <button class="btn" id="nextWithPhotos2">Giorno con foto →</button>
+        <button class="btn" id="chiudiDrawer">Chiudi</button>
+      </div>
+    </div>
+    <div class="body"><div class="foto" id="photoGrid"></div></div>
+  </aside>
+  
+  <aside class="drawer" id="filterDrawer">
+    <div class="bar">
+      <h2 id="filterTitle">Filtri</h2>
+      <button class="btn" id="chiudiFiltro">Chiudi</button>
+    </div>
+    <div class="body">
+      <div id="filterList"></div>
+      <div id="filterPhotos"></div>
+    </div>
+  </aside>
+  
+  <div class="modal" id="modal"><div class="frame"><img id="modalImg" alt="" /></div></div>
+  
+  <script>
+(function(){
+  const RANGE={startYear:2019,endYear:2025},WEEK_START=1;
+  let vista=oggiYM(),dati=leggiDaHTML(),giornoSelezionato=null;
+  const elTestaSett=byId('weekdayHead'),elGriglia=byId('grid'),
+        monthSel=byId('monthSel'),yearSel=byId('yearSel'),
+        btnPrev=byId('prevMonth'),btnNext=byId('nextMonth'),btnOggi=byId('todayBtn'),
+        btnPrevWP=byId('prevWithPhotos'),btnNextWP=byId('nextWithPhotos'),
+        btnPrevWP2=byId('prevWithPhotos2'),btnNextWP2=byId('nextWithPhotos2'),
+        monthDisplay=byId('monthDisplay'),
+        drawer=byId('drawer'),drawerTit=byId('drawerTitle'),photoGrid=byId('photoGrid'),
+        chiudiDrawer=byId('chiudiDrawer'),
+        filterBtn=byId('filterBtn'),filterDrawer=byId('filterDrawer'),
+        chiudiFiltro=byId('chiudiFiltro'),filterList=byId('filterList'),filterPhotos=byId('filterPhotos'),
+        modal=byId('modal'),modalImg=byId('modalImg');
+
+  renderIntestazioni();initSelettori();caricaDescrizioni();renderCalendario();aggiornaMonthDisplay();
+
+  function renderIntestazioni(){
+    const fmt=new Intl.DateTimeFormat('it-IT',{weekday:'short'}),base=new Date(2024,0,1);
+    elTestaSett.innerHTML='';
+    for(let i=0;i<7;i++){
+      const dow=(i+WEEK_START)%7;
+      const d=new Date(base);
+      d.setDate(d.getDate()+((dow-d.getDay()+7)%7));
+      const cell=document.createElement('div');
+      cell.textContent=fmt.format(d).toUpperCase();
+      elTestaSett.appendChild(cell);
+    }
+  }
+  function initSelettori(){
+    const mFmt=new Intl.DateTimeFormat('it-IT',{month:'long'});
+    monthSel.innerHTML='';
+    for(let m=0;m<12;m++){
+      const o=document.createElement('option');
+      o.value=m;
+      o.textContent=capitalize(mFmt.format(new Date(2024,m,1)));
+      monthSel.appendChild(o);
+    }
+    for(let y=RANGE.startYear;y<=RANGE.endYear;y++){
+      const o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);
+    }
+    monthSel.value=vista.m;yearSel.value=vista.y;
+    monthSel.onchange=()=>{vista.m=+monthSel.value;renderCalendario();aggiornaMonthDisplay();};
+    yearSel.onchange=()=>{vista.y=+yearSel.value;renderCalendario();aggiornaMonthDisplay();};
+    btnPrev.onclick=()=>spostaMese(-1);btnNext.onclick=()=>spostaMese(1);
+    btnOggi.onclick=()=>{vista=oggiYM();syncSel();renderCalendario();aggiornaMonthDisplay();};
+    btnPrevWP.onclick=()=>saltaGiornoConFoto(-1);btnNextWP.onclick=()=>saltaGiornoConFoto(1);
+    btnPrevWP2.onclick=()=>saltaGiornoConFoto(-1);btnNextWP2.onclick=()=>saltaGiornoConFoto(1);
+    chiudiDrawer.onclick=()=>drawer.classList.remove('aperta');
+    filterBtn.onclick=()=>apriFiltro();chiudiFiltro.onclick=()=>filterDrawer.classList.remove('aperta');
+    modal.addEventListener('click',e=>{if(e.target===modal)chiudiModal();});
+  }
+  function aggiornaMonthDisplay(){
+    monthDisplay.textContent=capitalize(new Intl.DateTimeFormat('it-IT',{month:'long',year:'numeric'}).format(new Date(vista.y,vista.m,1)));
+  }
+  function syncSel(){monthSel.value=vista.m;yearSel.value=vista.y;}
+  
+  function renderCalendario(){
+  elGriglia.innerHTML='';
+  const primo=new Date(vista.y,vista.m,1);
+  const offset=mod(primo.getDay()-WEEK_START,7);
+  const start=new Date(primo);start.setDate(1-offset);
+  const oggi=new Date();
+
+  for(let i=0;i<42;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    const iso=toISO(d);
+    const inMese=d.getMonth()===vista.m;
+    const cell=document.createElement('div');
+    cell.className='cell'+(inMese?'':' muted');
+    if(d.toDateString()===oggi.toDateString())cell.classList.add('oggi');
+
+    const head=document.createElement('div');
+    head.className='date-num';
+    head.textContent=d.getDate();
+    cell.appendChild(head);
+
+    const eventi=dati[iso]||[];
+    if(eventi.length){
+      const thumb=document.createElement('div');
+      thumb.className='thumb';
+      const slides=document.createElement('div');
+      slides.className='slides';
+      thumb.appendChild(slides);
+
+      eventi.forEach((ev,idx)=>{
+        const im=document.createElement('img');
+        im.src=ev.src;
+        im.alt=ev.description||'';
+        im.className='slide'+(idx===0?' attiva':'');
+        slides.appendChild(im);
+      });
+
+      cell.appendChild(thumb);
+      cell.onclick=()=>apriGiorno(iso);
+
+      // se ci sono più foto → slideshow automatico
+      if(eventi.length>1){
+        let idx=0;
+        const imgs=[...slides.querySelectorAll('.slide')];
+        setInterval(()=>{
+          imgs[idx].classList.remove('attiva');
+          idx=(idx+1)%imgs.length;
+          imgs[idx].classList.add('attiva');
+        },1500);
+      }
+    }
+
+    elGriglia.appendChild(cell);
+  }
+}
+
+
+  function apriGiorno(iso){
+    giornoSelezionato=iso;
+    const d=toDate(iso);
+    drawerTit.textContent=new Intl.DateTimeFormat('it-IT',{
+      day:'2-digit',month:'long',year:'numeric'
+    }).format(d);
+    renderGiorno(iso);
+    drawer.classList.add('aperta');
+  }
+
+  function renderGiorno(iso){
+    photoGrid.innerHTML='';
+    (dati[iso]||[]).forEach((item,idx)=>{
+      const card=document.createElement('div');card.className='card';
+      const media=document.createElement('div');media.className='media';
+      const img=document.createElement('img');
+      img.src=item.src;img.alt=item.description||'';
+      img.addEventListener('click',()=>apriModal(item.src,item.description||''));
+      media.appendChild(img);
+      const meta=document.createElement('div');meta.className='meta';
+      const badge=document.createElement('span');badge.className='sender-badge';
+      badge.textContent=(item.symbol||'👤')+' '+(item.sender||'Sconosciuto');
+      const cap=document.createElement('div');cap.className='cap';
+      cap.contentEditable="true";cap.spellcheck=false;cap.textContent=item.description||'';
+      cap.addEventListener('blur',()=>{const nuovo=cap.textContent.trim();item.description=nuovo;salvaDescrizione(iso,idx,nuovo);});
+      meta.appendChild(badge);meta.appendChild(cap);
+      const az=document.createElement('div');az.className='riga-azioni';
+      const dl=document.createElement('a');dl.className='ico-btn';dl.textContent='Scarica';dl.href=item.src;dl.download=`${iso}_foto${idx+1}.jpg`;az.appendChild(dl);
+      card.appendChild(media);card.appendChild(meta);card.appendChild(az);
+      photoGrid.appendChild(card);
+    });
+  }
+
+  function saltaGiornoConFoto(dir){
+    const chiavi=Object.keys(dati).sort();if(!chiavi.length)return;
+    let idx=chiavi.indexOf(giornoSelezionato);if(idx<0)idx=0;
+    let next=idx+dir;if(next<0)next=0;if(next>=chiavi.length)next=chiavi.length-1;
+    const target=chiavi[next];
+    vista.y=new Date(target).getFullYear();vista.m=new Date(target).getMonth();
+    syncSel();renderCalendario();aggiornaMonthDisplay();apriGiorno(target);
+  }
+
+  function apriFiltro(){renderListaFiltri();filterDrawer.classList.add('aperta');}
+  function renderListaFiltri(){
+    filterList.innerHTML='';filterPhotos.innerHTML='';
+    const senders=new Set();
+    Object.values(dati).forEach(arr=>arr.forEach(ev=>{if(ev.sender)senders.add(ev.sender);}));
+    [...senders].sort().forEach(sender=>{
+      const chip=document.createElement('div');
+      chip.className='filter-chip';chip.textContent=sender;
+      chip.onclick=()=>renderFiltroFoto(sender);
+      filterList.appendChild(chip);
+    });
+  }
+  function renderFiltroFoto(sender){
+    filterPhotos.innerHTML='';filterList.innerHTML='';
+    const back=document.createElement('div');back.className='filter-chip';
+    back.textContent='← Indietro';back.onclick=()=>renderListaFiltri();
+    filterList.appendChild(back);
+    Object.entries(dati).sort().forEach(([date,arr])=>{
+      arr.filter(ev=>ev.sender===sender).forEach(ev=>{
+        const d=toDate(date);
+        const dateLabel=document.createElement('div');
+        dateLabel.className='group-date';
+        dateLabel.textContent=new Intl.DateTimeFormat('it-IT',{
+          day:'2-digit',month:'long',year:'numeric'
+        }).format(d);
+        filterPhotos.appendChild(dateLabel);
+
+        const card=document.createElement('div');card.className='card';
+        const media=document.createElement('div');media.className='media';
+        const img=document.createElement('img');
+        img.src=ev.src;img.alt=ev.description||'';
+        img.addEventListener('click',()=>apriModal(ev.src,ev.description||''));
+        media.appendChild(img);
+        const meta=document.createElement('div');meta.className='meta';
+        const badge=document.createElement('span');badge.className='sender-badge';
+        badge.textContent=(ev.symbol||'👤')+' '+(ev.sender||'Sconosciuto');
+        const cap=document.createElement('div');cap.className='cap';
+        cap.textContent=ev.description||'';meta.appendChild(badge);meta.appendChild(cap);
+        const az=document.createElement('div');az.className='riga-azioni';
+        const dl=document.createElement('a');dl.className='ico-btn';dl.textContent='Scarica';
+        dl.href=ev.src;dl.download=`${date}_foto.jpg`;az.appendChild(dl);
+        card.appendChild(media);card.appendChild(meta);card.appendChild(az);
+        filterPhotos.appendChild(card);
+      });
+    });
+  }
+
+  function apriModal(src,alt){modalImg.src=src;modalImg.alt=alt;modal.classList.add('aperta');document.body.style.overflow='hidden';}
+  function chiudiModal(){modal.classList.remove('aperta');modalImg.src='';document.body.style.overflow='';}
+  function salvaDescrizione(date,index,text){localStorage.setItem(`desc_${date}_${index}`,text);}
+  function caricaDescrizioni(){Object.entries(dati).forEach(([date,arr])=>{arr.forEach((item,idx)=>{const val=localStorage.getItem(`desc_${date}_${idx}`);if(val!==null)item.description=val;});});}
+  function byId(id){return document.getElementById(id);}
+  function toISO(d){d.setHours(12,0,0,0);return d.toISOString().slice(0,10);}
+  function toDate(iso){return new Date(iso+'T12:00:00');}
+  function oggiYM(){const t=new Date();return{y:t.getFullYear(),m:t.getMonth()};}
+  function mod(a,b){return(a%b+b)%b;}
+  function capitalize(s){return s? s[0].toUpperCase()+s.slice(1):s;}
+  function spostaMese(step){let y=vista.y,m=vista.m+step;if(m<0){m=11;y--;}else if(m>11){m=0;y++;}vista={y,m};syncSel();renderCalendario();aggiornaMonthDisplay();}
+  function leggiDaHTML(){const root=byId('data'),out={};if(!root)return out;root.querySelectorAll('section[data-date]').forEach(sec=>{const data=sec.dataset.date;if(!/^\d{4}-\d{2}-\d{2}$/.test(data))return;sec.querySelectorAll('figure').forEach(fig=>{const img=fig.querySelector('img');if(!img)return;const cap=fig.querySelector('figcaption');const sender=fig.dataset.sender||'';const symbol=fig.dataset.symbol||'';(out[data] ||= []).push({src:img.src,description:(cap?.textContent||''),sender,symbol});});});return out;}
+
+})();
+</script>
+<script>
+  (function () {
+    const STORAGE_KEY = "photo_captions_v1";
+  
+    // Load previously saved captions
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  
+    // For every figcaption with a data-key
+    document.querySelectorAll("figcaption[contenteditable][data-key]").forEach(el => {
+      const key = el.dataset.key;
+      // If we have a saved caption, put it back
+      if (saved[key]) el.textContent = saved[key];
+  
+      // When you type something and stop
+      el.addEventListener("input", () => {
+        saved[key] = el.textContent.trim();
+        // Save all captions again to localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      });
+    });
+  })();
+  </script>
+  
+</body>
+</html>
