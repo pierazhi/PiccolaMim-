@@ -1343,7 +1343,85 @@
             <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
           </figure>
         </section>
-      </div>
+        
+        <section data-date="2021-08-03">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2021-08-03_5.jpeg" alt="2021-08-05_5" />
+            <figcaption contenteditable="true" data-key="./foto/2021-08-03_5.jpeg">Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-02-03">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-02-03.jpeg" alt="2023-02-03" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-05-14">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-05-14.jpeg" alt="2023-05-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2023-11-18">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2023-11-18.jpeg" alt="2023-11-18" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-08-14">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-08-14_1.jpeg" alt="2024-08-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-08-14_2.jpeg" alt="2024-08-14" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-26">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-26.jpeg" alt="2024-09-26" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-27">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_1.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_2.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-27_3.jpeg" alt="2024-09-27" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-09-28">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-09-28.jpeg" alt="2024-09-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2024-11-12">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2024-11-12.jpeg" alt="2024-11-12" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        <section data-date="2025-08-28">
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2025-08-28_1.jpeg" alt="2025-08-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+          <figure data-sender="Rorò 🐱" data-symbol="🐱">
+            <img src="./foto/2025-08-28_2.jpeg" alt="2025-08-28" />
+            <figcaption>Placeholder — scrivi qui la descrizione.</figcaption>
+          </figure>
+        </section>
+        
+      
 
            
   </div>
@@ -1591,5 +1669,28 @@
 
 })();
 </script>
+<script>
+  (function () {
+    const STORAGE_KEY = "photo_captions_v1";
+  
+    // Load previously saved captions
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  
+    // For every figcaption with a data-key
+    document.querySelectorAll("figcaption[contenteditable][data-key]").forEach(el => {
+      const key = el.dataset.key;
+      // If we have a saved caption, put it back
+      if (saved[key]) el.textContent = saved[key];
+  
+      // When you type something and stop
+      el.addEventListener("input", () => {
+        saved[key] = el.textContent.trim();
+        // Save all captions again to localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+      });
+    });
+  })();
+  </script>
+  
 </body>
 </html>
