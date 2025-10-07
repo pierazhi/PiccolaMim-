@@ -71,8 +71,8 @@ def main():
     ap.add_argument("-r", "--recursive", action="store_true", help="Scan subfolders too")
     ap.add_argument("--ext", action="append", help="Extra extension(s) to include (repeatable)")
     ap.add_argument("--base-url", default="./foto", help="Prefix for image src (default: ./foto)")
-    ap.add_argument("--sender", default="Rorò 🐱", help="data-sender value (default: 'Fra 🍐')")
-    ap.add_argument("--symbol", default="🐱", help="data-symbol value (default: '🍐')")
+    ap.add_argument("--sender", default="Gegè 👨🏻", help="data-sender value (default: 'Fra 🍐')")
+    ap.add_argument("--symbol", default="👨🏻", help="data-symbol value (default: '🍐')")
     ap.add_argument("--out", default="", help="Write output to file instead of stdout")
     ap.add_argument("--skip-nonmatching", action="store_true",
                     help="Silently skip files not starting with YYYY[-_]MM[-_]DD")
